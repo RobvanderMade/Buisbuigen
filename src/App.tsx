@@ -155,11 +155,7 @@ function AppHeader() {
       <div className="flex flex-col items-stretch gap-2 md:items-end">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-mono text-[10px] text-[var(--tb-muted)]">ID: {partId}</span>
-          <button
-            type="button"
-            className="rounded-lg border border-[var(--tb-border)] bg-black/30 px-2 py-1 text-xs text-[var(--tb-muted)]"
-            onClick={newPart}
-          >
+          <button type="button" className="tb-btn tb-btn--secondary tb-btn--sm" onClick={newPart}>
             Nieuw part ID
           </button>
           <label className="flex items-center gap-2 text-xs text-[var(--tb-muted)]">
@@ -181,7 +177,7 @@ function AppHeader() {
           />
           <button
             type="button"
-            className="rounded-lg border border-[var(--tb-accent)] bg-[var(--tb-accent-dim)] px-3 py-1 text-xs font-semibold text-white"
+            className="tb-btn tb-btn--primary tb-btn--sm"
             onClick={() => void onLoad()}
           >
             Laden

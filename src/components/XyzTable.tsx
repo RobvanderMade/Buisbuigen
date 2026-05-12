@@ -128,7 +128,7 @@ export function XyzTable() {
         cell: (ctx) => (
           <button
             type="button"
-            className="tb-btn-danger px-2 py-1 text-xs"
+            className="tb-btn tb-btn--danger tb-btn--sm tb-btn--icon"
             onClick={() => removePoint(ctx.row.original.id)}
             title="Rij verwijderen"
           >
@@ -152,7 +152,7 @@ export function XyzTable() {
         <h2 className="text-sm font-semibold tracking-wide text-[var(--tb-muted)]">
           XYZ HARTLIJN
         </h2>
-        <button type="button" className="tb-btn-primary text-xs" onClick={addPoint}>
+        <button type="button" className="tb-btn tb-btn--primary tb-btn--sm" onClick={addPoint}>
           + Punt
         </button>
       </div>
@@ -209,20 +209,6 @@ export function XyzTable() {
         .tb-input:focus {
           outline: 2px solid rgba(59, 130, 246, 0.35);
           border-color: rgba(59, 130, 246, 0.55);
-        }
-        .tb-btn-primary {
-          background: linear-gradient(180deg, #3b82f6, #2563eb);
-          border: 1px solid rgba(255,255,255,0.12);
-          color: white;
-          border-radius: 8px;
-          padding: 6px 12px;
-          font-weight: 600;
-        }
-        .tb-btn-danger {
-          background: rgba(248, 113, 113, 0.12);
-          border: 1px solid rgba(248, 113, 113, 0.35);
-          color: #fecaca;
-          border-radius: 6px;
         }
       `}</style>
     </div>

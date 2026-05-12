@@ -148,24 +148,19 @@ export function SvgViews({ points }: { points: TubePoint[] }) {
             <button
               key={v}
               type="button"
+              aria-pressed={view === v}
               onClick={() => {
                 setView(v)
                 resetView()
               }}
-              className={`rounded-lg border px-3 py-1 text-xs font-semibold ${
-                view === v
-                  ? 'border-[var(--tb-accent)] bg-[var(--tb-accent-dim)] text-white'
-                  : 'border-[var(--tb-border)] bg-black/30 text-[var(--tb-muted)]'
+              className={`tb-btn tb-btn--sm min-w-[2.75rem] ${
+                view === v ? 'tb-btn--active' : 'tb-btn--ghost'
               }`}
             >
               {v}
             </button>
           ))}
-          <button
-            type="button"
-            onClick={resetView}
-            className="rounded-lg border border-[var(--tb-border)] bg-black/30 px-3 py-1 text-xs text-[var(--tb-muted)]"
-          >
+          <button type="button" className="tb-btn tb-btn--ghost tb-btn--sm" onClick={resetView}>
             Reset zoom
           </button>
         </div>
