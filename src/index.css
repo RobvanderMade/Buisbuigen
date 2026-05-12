@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --tb-bg: #0b0d12;
+    --tb-panel: #12151d;
+    --tb-panel-2: #181c27;
+    --tb-border: #252a38;
+    --tb-accent: #3b82f6;
+    --tb-accent-dim: rgba(59, 130, 246, 0.15);
+    --tb-text: #e4e7ef;
+    --tb-muted: #8b93a7;
+    --tb-grid: rgba(255, 255, 255, 0.04);
+    --tb-danger: #f87171;
+    --tb-success: #34d399;
+    --font-ui: ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: ui-monospace, 'Cascadia Mono', 'Consolas', monospace;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-ui);
+    background: radial-gradient(
+        1200px 800px at 20% -10%,
+        rgba(59, 130, 246, 0.12),
+        transparent
+      ),
+      var(--tb-bg);
+    color: var(--tb-text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+}
+
+@layer utilities {
+  .tb-panel {
+    background: linear-gradient(180deg, var(--tb-panel) 0%, var(--tb-panel-2) 100%);
+    border: 1px solid var(--tb-border);
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  }
+}
