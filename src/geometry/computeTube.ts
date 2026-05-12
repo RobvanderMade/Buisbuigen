@@ -26,31 +26,20 @@ function toVec3(p: TubePoint): Vec3 {
   return vec3(p.x, p.y, p.z)
 }
 
-/**
- * Berekent bochten, tangentknippen, totale hartlijnlengte en bounding boxes.
- */
-export function computeTubeGeometry(
+export interface TangentCuts {
+  startCut: number[]
+  endCut: number[]
+  bends: Bend[]
+}
+
+/** Tangentafstanden per segment (zelfde logica als hartlijnlengte). */
+export function computeTangentCuts(
+  pointsVec: Vec3[],
   points: TubePoint[],
-  tubeRadiusMm: number,
-): TubeComputed {
-  const pointsVec = points.map(toVec3)
+): TangentCuts {
   const n = pointsVec.length
-
-  if (n === 0) {
-    return {
-      pointsVec: [],
-      bends: [],
-      totalLengthMm: 0,
-      chordalLengthMm: 0,
-      boundingBoxCenterline: emptyBoundingBox(),
-      boundingBoxOuter: emptyBoundingBox(),
-    }
-  }
-
   const bends: Bend[] = []
-  /** Korting aan het begin van segment k (P_k → P_{k+1}) door bocht op P_k. */
   const startCut = Array.from({ length: Math.max(0, n - 1) }, () => 0)
-  /** Korting aan het einde van segment k door bocht op P_{k+1}. */
   const endCut = Array.from({ length: Math.max(0, n - 1) }, () => 0)
 
   for (let i = 1; i < n - 1; i++) {
@@ -75,6 +64,32 @@ export function computeTubeGeometry(
     endCut[i - 1] = (endCut[i - 1] ?? 0) + t
     startCut[i] = (startCut[i] ?? 0) + t
   }
+
+  return { startCut, endCut, bends }
+}
+
+/**
+ * Berekent bochten, tangentknippen, totale hartlijnlengte en bounding boxes.
+ */
+export function computeTubeGeometry(
+  points: TubePoint[],
+  tubeRadiusMm: number,
+): TubeComputed {
+  const pointsVec = points.map(toVec3)
+  const n = pointsVec.length
+
+  if (n === 0) {
+    return {
+      pointsVec: [],
+      bends: [],
+      totalLengthMm: 0,
+      chordalLengthMm: 0,
+      boundingBoxCenterline: emptyBoundingBox(),
+      boundingBoxOuter: emptyBoundingBox(),
+    }
+  }
+
+  const { startCut, endCut, bends } = computeTangentCuts(pointsVec, points)
 
   let straightSum = 0
   for (let i = 0; i < n - 1; i++) {

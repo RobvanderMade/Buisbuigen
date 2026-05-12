@@ -1,5 +1,6 @@
 export * from './bend'
 export * from './boundingBox'
+export * from './centerlineSample'
 export * from './computeTube'
 export * from './segment'
 export * from './tangent'

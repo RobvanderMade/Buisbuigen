@@ -1,6 +1,7 @@
 import type { Bend, BoundingBox, TubePoint } from '../types'
 import { computeTubeGeometry } from '../geometry'
 import { newId } from '../utils/id'
+import { normalizePointsArray } from '../utils/normalizePoints'
 import { create } from 'zustand'
 
 const DEFAULT_MATERIAL_ID = 'steel-s355'
@@ -166,7 +167,8 @@ export const useTubeStore = create<TubeStoreState>((set, get) => {
     selectPoint: (id) => set({ selectedPointId: id }),
     selectSegment: (index) => set({ selectedSegmentIndex: index }),
     hydrateFromPart: (payload) => {
-      const d = recompute(payload.points, payload.tubeDiameterMm)
+      const points = normalizePointsArray(payload.points)
+      const d = recompute(points, payload.tubeDiameterMm)
       set({
         partId: payload.partId,
         partName: payload.partName,
@@ -174,7 +176,7 @@ export const useTubeStore = create<TubeStoreState>((set, get) => {
         machineId: payload.machineId,
         tubeDiameterMm: payload.tubeDiameterMm,
         wallThicknessMm: payload.wallThicknessMm,
-        points: payload.points,
+        points,
         ...d,
         remoteEpoch: payload.remoteEpoch ?? get().remoteEpoch,
       })

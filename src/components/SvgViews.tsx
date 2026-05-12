@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState, type WheelEvent, type MouseEvent } from 'react'
+import { sampleCenterlinePolyline, type Vec3 } from '../geometry'
 import type { TubePoint } from '../types'
 
 type ViewId = 'XY' | 'XZ' | 'YZ' | 'ISO'
@@ -8,8 +9,7 @@ interface Pt2 {
   y: number
 }
 
-function project(point: TubePoint, view: ViewId): Pt2 {
-  const { x, y, z } = point
+function projectXYZ(x: number, y: number, z: number, view: ViewId): Pt2 {
   switch (view) {
     case 'XY':
       return { x, y: -y }
@@ -25,6 +25,14 @@ function project(point: TubePoint, view: ViewId): Pt2 {
     default:
       return { x, y: -y }
   }
+}
+
+function project(point: TubePoint, view: ViewId): Pt2 {
+  return projectXYZ(point.x, point.y, point.z, view)
+}
+
+function projectVec(v: Vec3, view: ViewId): Pt2 {
+  return projectXYZ(v[0], v[1], v[2], view)
 }
 
 function bounds2d(pts: Pt2[]): { minX: number; minY: number; maxX: number; maxY: number } {
@@ -50,13 +58,20 @@ export function SvgViews({ points }: { points: TubePoint[] }) {
     null,
   )
 
+  const centerline = useMemo(() => sampleCenterlinePolyline(points), [points])
+
   const projected = useMemo(
     () => points.map((p) => ({ p, q: project(p, view) })),
     [points, view],
   )
 
+  const pathQs = useMemo(
+    () => centerline.map((v) => projectVec(v, view)),
+    [centerline, view],
+  )
+
   const { vb, map } = useMemo(() => {
-    const qs = projected.map((o) => o.q)
+    const qs = [...projected.map((o) => o.q), ...pathQs]
     const b = bounds2d(qs)
     const w = Math.max(40, b.maxX - b.minX)
     const h = Math.max(40, b.maxY - b.minY)
@@ -70,17 +85,17 @@ export function SvgViews({ points }: { points: TubePoint[] }) {
     const map = (pt: Pt2) => ({ x: ox + pt.x * s, y: oy + pt.y * s })
     const vb = `0 0 ${size} ${size}`
     return { vb, map, s }
-  }, [projected, scale, pan])
+  }, [projected, pathQs, scale, pan])
 
   const pathD = useMemo(() => {
-    if (projected.length === 0) return ''
+    if (pathQs.length === 0) return ''
     const parts: string[] = []
-    projected.forEach((o, i) => {
-      const m = map(o.q)
+    pathQs.forEach((q, i) => {
+      const m = map(q)
       parts.push(`${i === 0 ? 'M' : 'L'} ${m.x.toFixed(2)} ${m.y.toFixed(2)}`)
     })
     return parts.join(' ')
-  }, [map, projected])
+  }, [map, pathQs])
 
   const dim = useMemo(() => {
     if (projected.length < 2) return null
