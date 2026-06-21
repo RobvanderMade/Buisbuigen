@@ -7,8 +7,11 @@ import type { TubePoint } from './types'
 import { FutureFeaturesPanel } from './components/FutureFeaturesPanel'
 import { StatusPanel } from './components/StatusPanel'
 import { SvgViews } from './components/SvgViews'
+import { ThomanSimPanel } from './components/ThomanSimPanel'
 import { TubeViewer3D } from './components/TubeViewer3D'
 import { XyzTable } from './components/XyzTable'
+
+type AppMode = 'centerline' | 'thoman'
 
 function AppHeader() {
   const partId = useTubeStore((s) => s.partId)
@@ -197,12 +200,12 @@ function AppHeader() {
   )
 }
 
-export default function App() {
+function CenterlineView() {
   const points = useTubeStore((s) => s.points)
   const tubeDiameterMm = useTubeStore((s) => s.tubeDiameterMm)
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2 p-2 md:p-3">
+    <>
       <AppHeader />
       <div className="flex min-h-0 flex-1 flex-col gap-2 xl:flex-row">
         <section className="tb-panel flex min-h-[360px] min-w-0 flex-1 flex-col p-3 xl:max-w-[52%]">
@@ -215,6 +218,44 @@ export default function App() {
       </div>
       <SvgViews points={points} />
       <StatusPanel />
+    </>
+  )
+}
+
+function resolveInitialMode(): AppMode {
+  if (typeof window === 'undefined') return 'thoman'
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('mode') === 'centerline') return 'centerline'
+  return 'thoman'
+}
+
+export default function App() {
+  const [mode, setMode] = useState<AppMode>(resolveInitialMode)
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-2 p-2 md:p-3">
+      <nav className="tb-panel flex shrink-0 flex-wrap gap-2 p-2">
+        <button
+          type="button"
+          className={`tb-btn tb-btn--sm ${mode === 'thoman' ? 'tb-btn--primary' : 'tb-btn--secondary'}`}
+          onClick={() => setMode('thoman')}
+        >
+          Thoman STR
+        </button>
+        <button
+          type="button"
+          className={`tb-btn tb-btn--sm ${mode === 'centerline' ? 'tb-btn--primary' : 'tb-btn--secondary'}`}
+          onClick={() => setMode('centerline')}
+        >
+          Centerline CAD
+        </button>
+      </nav>
+
+      {mode === 'thoman' ? (
+        <ThomanSimPanel />
+      ) : (
+        <CenterlineView />
+      )}
     </div>
   )
 }
